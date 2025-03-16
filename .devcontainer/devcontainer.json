@@ -1,0 +1,11 @@
+{
+    "name": "Laravel Development",
+    "dockerComposeFile": "compose.dev.yaml",
+    "service": "php-fpm",
+    "workspaceFolder": "/var/www",
+    "extensions": [
+      "felixfbecker.php-intellisense",
+      "bmewburn.vscode-intelephense-client",
+      "onecentlin.laravel-blade"
+    ]
+  }

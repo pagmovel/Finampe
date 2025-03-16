@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www  # Bind mount para sincronizar o diretório do projeto
+      - ./docker/development/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8500:80"
+    networks:
+      - finampe_network
+    depends_on:
+      php-fpm:
+        condition: service_started
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: ./docker/common/php-fpm/Dockerfile
+      target: development
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www  # Bind mount para sincronizar o diretório do projeto
+      - ./storage:/var/www/storage  # Bind mount para o diretório de armazenamento
+    networks:
+      - finampe_network
+      - postgres_network
+
+  redis:
+    image: redis:alpine
+    networks:
+      - finampe_network
+    ports:
+      - "6379:6379"
+
+networks:
+  finampe_network:
+    name: finampe_network
+    external: true
+  postgres_network:
+    external: true
