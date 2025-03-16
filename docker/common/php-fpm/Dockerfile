@@ -3,9 +3,11 @@
 # Base stage
 FROM php:8.3-fpm AS base
 
+# Instalar pacotes necessários, incluindo Composer
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
+    git \
     libpq-dev \
     libonig-dev \
     libssl-dev \
@@ -25,12 +27,22 @@ RUN apt-get update && apt-get install -y \
     && pecl install redis xdebug \
     && docker-php-ext-enable redis xdebug
 
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Development stage
 FROM base AS development
 
-# Aqui você pode adicionar comandos específicos para o ambiente de desenvolvimento
-# Por exemplo, instalar ferramentas de desenvolvimento adicionais
+# Instalar Node.js e npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
 
-# Production stage (opcional)
-# FROM base AS production
-# Aqui você pode adicionar comandos específicos para o ambiente de produção
+# Definir diretório de trabalho
+WORKDIR /var/www
+
+# Copiar arquivos do projeto
+COPY . .
+
+# Exibir versões instaladas para debug
+RUN php -v && composer --version && node -v && npm -v

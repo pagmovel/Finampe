@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     image: nginx:latest
@@ -15,6 +13,8 @@ services:
         condition: service_started
 
   php-fpm:
+    mem_limit: 512m
+    cpus: "1.5"
     build:
       context: .
       dockerfile: ./docker/common/php-fpm/Dockerfile
@@ -27,6 +27,8 @@ services:
     networks:
       - finampe_network
       - postgres_network
+    ports:
+      - "5173:5173"  # Expor a porta do Vite para o navegador acessar
 
   redis:
     image: redis:alpine
@@ -38,6 +40,6 @@ services:
 networks:
   finampe_network:
     name: finampe_network
-    external: true
+    # external: true
   postgres_network:
     external: true
